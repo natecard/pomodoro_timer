@@ -29,7 +29,7 @@ export default function Timer() {
     setProgress(100);
     setKey((prevKey) => prevKey + 1);
   };
-  let children;
+
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
@@ -65,20 +65,18 @@ export default function Timer() {
           newInitialRemainingTime: remainingTime,
         })}
       >
-        {
-          (children = ({ remainingTime }): string => {
-            if (minutes < 10 && seconds < 10) {
-              return `0${minutes}:0${seconds}`;
-            }
-            if (seconds < 10) {
-              return `${minutes}:0${seconds}`;
-            }
-            if (minutes < 10) {
-              return `0${minutes}:${seconds}`;
-            }
-            return `${minutes}:${seconds}`;
-          })
-        }
+        {({ remainingTime }) => {
+          if (minutes < 10 && seconds < 10) {
+            return `0${minutes}:0${seconds}`;
+          }
+          if (seconds < 10) {
+            return `${minutes}:0${seconds}`;
+          }
+          if (minutes < 10) {
+            return `0${minutes}:${seconds}`;
+          }
+          return `${minutes}:${seconds}`;
+        }}
       </CountdownCircleTimer>
       <div className="controls">
         <Button
