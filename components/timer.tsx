@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 export default function Timer() {
   const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
+  const [key, setKey] = useState(0);
   const [remainingTime, setRemainingTime] = useState(
     minutes * 60 + seconds / (minutes * 60)
   );
@@ -21,13 +22,14 @@ export default function Timer() {
   };
 
   const handleResetTimer = () => {
-    setMinutes(25);
+    setMinutes(2);
     setSeconds(0);
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(false);
     setProgress(100);
+    setKey((prevKey) => prevKey + 1);
   };
-
+  let children;
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
@@ -52,6 +54,7 @@ export default function Timer() {
   return (
     <div className="flex flex-col justify-center">
       <CountdownCircleTimer
+        key={key}
         isPlaying={isTimerRunning}
         duration={remainingTime}
         strokeWidth={15}
@@ -62,18 +65,20 @@ export default function Timer() {
           newInitialRemainingTime: remainingTime,
         })}
       >
-        {({ remainingTime }) => {
-          if (minutes < 10 && seconds < 10) {
-            return `0${minutes}:0${seconds}`;
-          }
-          if (seconds < 10) {
-            return `${minutes}:0${seconds}`;
-          }
-          if (minutes < 10) {
-            return `0${minutes}:${seconds}`;
-          }
-          return `${minutes}:${seconds}`;
-        }}
+        {
+          (children = ({ remainingTime }): string => {
+            if (minutes < 10 && seconds < 10) {
+              return `0${minutes}:0${seconds}`;
+            }
+            if (seconds < 10) {
+              return `${minutes}:0${seconds}`;
+            }
+            if (minutes < 10) {
+              return `0${minutes}:${seconds}`;
+            }
+            return `${minutes}:${seconds}`;
+          })
+        }
       </CountdownCircleTimer>
       <div className="controls">
         <Button
