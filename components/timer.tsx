@@ -1,10 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { Button } from "./ui/button";
 
 export default function Timer() {
-  const [minutes, setMinutes] = useState(25);
+  const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(
+    minutes * 60 + seconds / (minutes * 60)
+  );
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [progress, setProgress] = useState(100);
 
@@ -15,9 +19,11 @@ export default function Timer() {
   const handlePauseTimer = () => {
     setIsTimerRunning(false);
   };
+
   const handleResetTimer = () => {
     setMinutes(25);
     setSeconds(0);
+    setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(false);
     setProgress(100);
   };
@@ -32,7 +38,6 @@ export default function Timer() {
           setSeconds(seconds - 1);
         }
 
-        const remainingTime = (minutes * 60 + seconds) / (25 * 60);
         setProgress(100 - remainingTime * 100);
 
         if (minutes === 0 && seconds === 0) {
@@ -42,45 +47,52 @@ export default function Timer() {
 
       return () => clearInterval(intervalId);
     }
-  }, [isTimerRunning, minutes, seconds]);
+  }, [isTimerRunning, minutes, remainingTime, seconds]);
 
   return (
-    <div className="timer-container">
-      <div className="timer">
-        {minutes}:{seconds.toString().padStart(2, "0")}
-      </div>
+    <div className="flex flex-col justify-center">
       <CountdownCircleTimer
-        isPlaying={false}
-        duration={10}
-        strokeWidth={20}
+        isPlaying={isTimerRunning}
+        duration={remainingTime}
+        strokeWidth={15}
         colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
         colorsTime={[10, 6, 3, 0]}
-        onComplete={() => ({ shouldRepeat: false })}
+        onComplete={() => ({
+          shouldRepeat: false,
+          newInitialRemainingTime: remainingTime,
+        })}
       >
         {({ remainingTime }) => {
-          //   const minutes = Math.floor(remainingTime / 60);
-          //   const seconds = remainingTime % 60;
+          if (minutes < 10 && seconds < 10) {
+            return `0${minutes}:0${seconds}`;
+          }
+          if (seconds < 10) {
+            return `${minutes}:0${seconds}`;
+          }
+          if (minutes < 10) {
+            return `0${minutes}:${seconds}`;
+          }
           return `${minutes}:${seconds}`;
         }}
       </CountdownCircleTimer>
       <div className="controls">
-        <button
+        <Button
           onClick={handleStartTimer}
           disabled={isTimerRunning}
-          className="btn start"
+          className="btn start m-2"
         >
           Start
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handlePauseTimer}
           disabled={!isTimerRunning}
-          className="btn pause"
+          className="btn pause m-2"
         >
           Pause
-        </button>
-        <button onClick={handleResetTimer} className="btn reset">
+        </Button>
+        <Button onClick={handleResetTimer} className="m-2 btn reset">
           Reset
-        </button>
+        </Button>
       </div>
     </div>
   );
