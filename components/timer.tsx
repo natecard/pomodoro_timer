@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Button } from "./ui/button";
-import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Slider } from "./ui/slider";
+import { Pause, Play, TimerReset } from "lucide-react";
 
 export default function Timer() {
   const [minutes, setMinutes] = useState(0);
@@ -139,26 +139,29 @@ export default function Timer() {
         <div className="flex flex-row justify-center">
           <Button
             variant={"ghost"}
+            size={"icon"}
             onClick={handleStartTimer}
             disabled={isTimerRunning}
             className="btn start m-2"
           >
-            Start
+            <Play />
           </Button>
           <Button
             variant={"ghost"}
+            size={"icon"}
             onClick={handlePauseTimer}
             disabled={!isTimerRunning}
             className="btn pause m-2"
           >
-            Pause
+            <Pause />
           </Button>
           <Button
             variant={"ghost"}
+            size={"icon"}
             onClick={handleResetTimer}
             className="m-2 btn reset"
           >
-            Reset
+            <TimerReset />
           </Button>
         </div>
       </div>

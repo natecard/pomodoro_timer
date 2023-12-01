@@ -96,10 +96,14 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 550,
         "resizable": true,
-        "title": "Pomodoro Timer",
-        "width": 600
+        "title": "TMR: A POMODORO TIMER",
+        "width": 500,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "minHeight": 495,
+        "minWidth": 330
       }
     ]
   }
