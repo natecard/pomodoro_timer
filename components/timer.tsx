@@ -13,8 +13,10 @@ export default function Timer() {
     minutes * 60 + seconds / (minutes * 60)
   );
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [isBreak, setIsBreak] = useState(false);
   const [progress, setProgress] = useState(100);
   const [cycleCounter, setCycleCounter] = useState(0);
+  const [breakCounter, setBreakCounter] = useState(0);
 
   const handleStartTimer = () => {
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
@@ -30,6 +32,7 @@ export default function Timer() {
     setSeconds(0);
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(false);
+    setIsBreak(false);
     setProgress(100);
     setKey((prevKey) => prevKey + 1);
   };
@@ -41,10 +44,17 @@ export default function Timer() {
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
-        if (minutes <= 0 && seconds <= 0) {
+        if (minutes <= 0 && seconds <= 0 && isBreak) {
+          setBreakCounter((prevBreakCounter) => prevBreakCounter + 1);
+          setMinutes(25);
+          setSeconds(0);
+          setIsBreak(false);
+          setIsTimerRunning(false);
+        } else if (minutes <= 0 && seconds <= 0) {
           setCycleCounter((prevCycleCounter) => prevCycleCounter + 1);
           setMinutes(5);
           setSeconds(0);
+          setIsBreak(true);
           setIsTimerRunning(false);
         } else if (seconds === 0) {
           setMinutes(minutes - 1);
@@ -112,7 +122,13 @@ export default function Timer() {
           >
             25 Minutes
           </Button>
-          <Button variant={"ghost"} onClick={() => setMinutes(5)}>
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              setMinutes(5);
+              setIsBreak(true);
+            }}
+          >
             Take Break
           </Button>
         </div>
@@ -143,6 +159,7 @@ export default function Timer() {
         </div>
       </div>
       <div>Pomodoro Cycles: {cycleCounter}</div>
+      <div>Breaks: {breakCounter}</div>
     </div>
   );
 }
