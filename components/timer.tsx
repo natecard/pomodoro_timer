@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Button } from "./ui/button";
 import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from "@tauri-apps/api/window";
 import { Slider } from "./ui/slider";
 
 export default function Timer() {
@@ -50,12 +51,14 @@ export default function Timer() {
           setSeconds(0);
           setIsBreak(false);
           setIsTimerRunning(false);
+          appWindow.setFocus();
         } else if (minutes <= 0 && seconds <= 0) {
           setCycleCounter((prevCycleCounter) => prevCycleCounter + 1);
           setMinutes(5);
           setSeconds(0);
           setIsBreak(true);
           setIsTimerRunning(false);
+          appWindow.setFocus();
         } else if (seconds === 0) {
           setMinutes(minutes - 1);
           setSeconds(59);
@@ -76,7 +79,7 @@ export default function Timer() {
 
   useEffect(() => {});
   return (
-    <div className="flex flex-col items-center justify-center p-8">
+    <div className="flex flex-col items-center justify-center p-4">
       <CountdownCircleTimer
         key={key}
         isPlaying={isTimerRunning}
@@ -102,7 +105,7 @@ export default function Timer() {
           return `${minutes}:${seconds}`;
         }}
       </CountdownCircleTimer>
-      <div className="controls flex flex-col p-4">
+      <div className="controls flex flex-col p-3">
         <form className="flex">
           <Slider
             value={[minutes]}
