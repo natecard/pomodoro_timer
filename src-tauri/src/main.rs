@@ -3,10 +3,10 @@
 
 use std::env;
 
-use tauri::Manager;
+use tauri::{Manager};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, SystemTray};
 fn main() {
- let icon_bytes = if cfg!(target_os = "windows") {
+ let icon_bytes = if cfg!(windows) {
   include_bytes!("../icons/icon.ico").to_vec()
   } else {
   include_bytes!("../icons/icon.png").to_vec()
