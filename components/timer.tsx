@@ -72,8 +72,9 @@ export default function Timer() {
 
       return () => clearInterval(intervalId);
     }
-  }, [isTimerRunning, minutes, remainingTime, seconds]);
+  }, [isBreak, isTimerRunning, minutes, remainingTime, seconds]);
 
+  useEffect(() => {});
   return (
     <div className="flex flex-col items-center justify-center p-8">
       <CountdownCircleTimer
