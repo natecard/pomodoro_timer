@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Button } from "./ui/button";
+import { invoke } from "@tauri-apps/api/tauri";
+import { Slider } from "./ui/slider";
 
 export default function Timer() {
-  const [minutes, setMinutes] = useState(1);
+  const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [key, setKey] = useState(0);
   const [remainingTime, setRemainingTime] = useState(
@@ -12,8 +14,10 @@ export default function Timer() {
   );
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [progress, setProgress] = useState(100);
+  const [cycleCounter, setCycleCounter] = useState(0);
 
   const handleStartTimer = () => {
+    setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(true);
   };
 
@@ -22,7 +26,7 @@ export default function Timer() {
   };
 
   const handleResetTimer = () => {
-    setMinutes(2);
+    setMinutes(25);
     setSeconds(0);
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(false);
@@ -30,10 +34,19 @@ export default function Timer() {
     setKey((prevKey) => prevKey + 1);
   };
 
+  function handleSlider(value: number) {
+    setMinutes(value);
+    setRemainingTime(value * 60);
+  }
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
-        if (seconds === 0) {
+        if (minutes <= 0 && seconds <= 0) {
+          setCycleCounter((prevCycleCounter) => prevCycleCounter + 1);
+          setMinutes(5);
+          setSeconds(0);
+          setIsTimerRunning(false);
+        } else if (seconds === 0) {
           setMinutes(minutes - 1);
           setSeconds(59);
         } else {
@@ -52,7 +65,7 @@ export default function Timer() {
   }, [isTimerRunning, minutes, remainingTime, seconds]);
 
   return (
-    <div className="flex flex-col justify-center">
+    <div className="flex flex-col items-center justify-center p-8">
       <CountdownCircleTimer
         key={key}
         isPlaying={isTimerRunning}
@@ -78,25 +91,58 @@ export default function Timer() {
           return `${minutes}:${seconds}`;
         }}
       </CountdownCircleTimer>
-      <div className="controls">
-        <Button
-          onClick={handleStartTimer}
-          disabled={isTimerRunning}
-          className="btn start m-2"
-        >
-          Start
-        </Button>
-        <Button
-          onClick={handlePauseTimer}
-          disabled={!isTimerRunning}
-          className="btn pause m-2"
-        >
-          Pause
-        </Button>
-        <Button onClick={handleResetTimer} className="m-2 btn reset">
-          Reset
-        </Button>
+      <div className="controls flex flex-col p-4">
+        <form className="flex">
+          <Slider
+            value={[minutes]}
+            onValueChange={(value) => {
+              handleSlider(value[0]);
+            }}
+            className="p-4"
+            defaultValue={[25]}
+            min={0}
+            max={60}
+            step={1}
+          />
+        </form>
+        <div className="flex flex-row justify-center">
+          <Button
+            variant={"ghost"}
+            onClick={() => setMinutes((prevVal) => prevVal + 25)}
+          >
+            25 Minutes
+          </Button>
+          <Button variant={"ghost"} onClick={() => setMinutes(5)}>
+            Take Break
+          </Button>
+        </div>
+        <div className="flex flex-row justify-center">
+          <Button
+            variant={"ghost"}
+            onClick={handleStartTimer}
+            disabled={isTimerRunning}
+            className="btn start m-2"
+          >
+            Start
+          </Button>
+          <Button
+            variant={"ghost"}
+            onClick={handlePauseTimer}
+            disabled={!isTimerRunning}
+            className="btn pause m-2"
+          >
+            Pause
+          </Button>
+          <Button
+            variant={"ghost"}
+            onClick={handleResetTimer}
+            className="m-2 btn reset"
+          >
+            Reset
+          </Button>
+        </div>
       </div>
+      <div>Pomodoro Cycles: {cycleCounter}</div>
     </div>
   );
 }
