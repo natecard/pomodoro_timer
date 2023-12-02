@@ -43,13 +43,13 @@
         "setMaximizable": false,
         "setMinSize": false,
         "setMinimizable": false,
-        "setPosition": false,
-        "setResizable": false,
+        "setPosition": true,
+        "setResizable": true,
         "setSize": false,
         "setSkipTaskbar": false,
         "setTitle": false,
         "show": true,
-        "startDragging": false,
+        "startDragging": true,
         "unmaximize": false,
         "unminimize": false
       }
@@ -100,8 +100,6 @@
         "resizable": true,
         "title": "TMR: A POMODORO TIMER",
         "width": 500,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true,
         "minHeight": 495,
         "minWidth": 330
       }

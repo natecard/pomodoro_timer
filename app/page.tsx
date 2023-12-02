@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Timer from "../components/timer";
 import { ModeToggle } from "../components/theme-toggle";
 
