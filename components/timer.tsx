@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Button } from "./ui/button";
-import { appWindow } from "@tauri-apps/api/window";
 import { Slider } from "./ui/slider";
 import { Pause, Play, TimerReset } from "lucide-react";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -166,6 +165,7 @@ export default function Timer() {
           </Button>
         </div>
       </div>
+      {/* <Counter/> */}
       <div>Pomodoro Cycles: {cycleCounter}</div>
       <div>Breaks: {breakCounter}</div>
     </div>
