@@ -64,7 +64,7 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![counter, show_window])
+    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window])
     .system_tray(tray)
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -73,12 +73,20 @@ fn main() {
 #[tauri::command]
 fn show_window(app: AppHandle) {
   let window = app.get_window("main").unwrap();
-  // let menu_item = app.tray_handle().get_item("toggle");
   window.show().unwrap();
-  // menu_item.set_title("Show");
 }
+// TODO Write counter + value functions
+// pub let break_counter_value: i32 = 0;
 
 #[tauri::command]
-fn counter(value: i32) {
- println!("Cycle Counter: {}", value)
+fn break_counter(value: i32) {
+ let session_value: i32 = 0;
+ let session_count_value: i32 = session_value + value;
+ println!("Pomodoro Sessions: {}", session_count_value)
+}
+#[tauri::command]
+fn session_counter(value: i32) {
+  let break_value: i32 = 0;
+  let break_count_value: i32 = break_value + value;
+ println!("Break Sessions: {}", break_count_value)
 }
