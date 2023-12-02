@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { appWindow } from "@tauri-apps/api/window";
 import { Slider } from "./ui/slider";
 import { Pause, Play, TimerReset } from "lucide-react";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export default function Timer() {
   const [minutes, setMinutes] = useState(0);
@@ -51,14 +52,14 @@ export default function Timer() {
           setSeconds(0);
           setIsBreak(false);
           setIsTimerRunning(false);
-          appWindow.setFocus();
+          invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
           setCycleCounter((prevCycleCounter) => prevCycleCounter + 1);
           setMinutes(5);
           setSeconds(0);
           setIsBreak(true);
           setIsTimerRunning(false);
-          appWindow.setFocus();
+          invoke("show_window");
         } else if (seconds === 0) {
           setMinutes(minutes - 1);
           setSeconds(59);

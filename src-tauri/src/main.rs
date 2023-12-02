@@ -2,8 +2,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::env;
-
-use tauri::{Manager};
+// TODO Create window handler function
+// TODO 
+use tauri::{Manager, AppHandle};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, SystemTray};
 fn main() {
  let icon_bytes = if cfg!(windows) {
@@ -63,12 +64,19 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![counter])
+    .invoke_handler(tauri::generate_handler![counter, show_window])
     .system_tray(tray)
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
 
+#[tauri::command]
+fn show_window(app: AppHandle) {
+  let window = app.get_window("main").unwrap();
+  // let menu_item = app.tray_handle().get_item("toggle");
+  window.show().unwrap();
+  // menu_item.set_title("Show");
+}
 
 #[tauri::command]
 fn counter(value: i32) {
