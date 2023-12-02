@@ -1,10 +1,12 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { Button } from "./ui/button";
 import { Slider } from "./ui/slider";
 import { Pause, Play, TimerReset } from "lucide-react";
 import { invoke } from "@tauri-apps/api/tauri";
+import Counter from "./Counter";
+import { DataContext } from "./ContextProvider";
 
 export default function Timer() {
   const [minutes, setMinutes] = useState(0);
@@ -16,8 +18,10 @@ export default function Timer() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [progress, setProgress] = useState(100);
-  const [cycleCounter, setCycleCounter] = useState(0);
-  const [breakCounter, setBreakCounter] = useState(0);
+  const { sessionCounter, setSessionCounter, breakCounter, setBreakCounter } =
+    useContext(DataContext);
+  // const [cycleCounter, setCycleCounter] = useState(0);
+  // const [breakCounter, setBreakCounter] = useState(0);
 
   const handleStartTimer = () => {
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
@@ -46,14 +50,16 @@ export default function Timer() {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
         if (minutes <= 0 && seconds <= 0 && isBreak) {
-          setBreakCounter((prevBreakCounter) => prevBreakCounter + 1);
+          setBreakCounter((prevBreakCounter: Number) => prevBreakCounter + 1);
           setMinutes(25);
           setSeconds(0);
           setIsBreak(false);
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
-          setCycleCounter((prevCycleCounter) => prevCycleCounter + 1);
+          setSessionCounter(
+            (prevSessionCounter: Number) => prevSessionCounter + 1
+          );
           setMinutes(5);
           setSeconds(0);
           setIsBreak(true);
@@ -165,9 +171,9 @@ export default function Timer() {
           </Button>
         </div>
       </div>
-      {/* <Counter/> */}
-      <div>Pomodoro Cycles: {cycleCounter}</div>
-      <div>Breaks: {breakCounter}</div>
+      <Counter />
+      {/* <div>Pomodoro Cycles: {cycleCounter}</div>
+      <div>Breaks: {breakCounter}</div> */}
     </div>
   );
 }

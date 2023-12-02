@@ -3,7 +3,7 @@
 
 use std::env;
 // TODO Create window handler function
-// TODO 
+
 use tauri::{Manager, AppHandle};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, SystemTray};
 fn main() {
@@ -75,18 +75,12 @@ fn show_window(app: AppHandle) {
   let window = app.get_window("main").unwrap();
   window.show().unwrap();
 }
-// TODO Write counter + value functions
-// pub let break_counter_value: i32 = 0;
 
 #[tauri::command]
-fn break_counter(value: i32) {
- let session_value: i32 = 0;
- let session_count_value: i32 = session_value + value;
- println!("Pomodoro Sessions: {}", session_count_value)
+fn break_counter(value: i32) -> String {
+ format!("Break Sessions: {}", value)
 }
 #[tauri::command]
-fn session_counter(value: i32) {
-  let break_value: i32 = 0;
-  let break_count_value: i32 = break_value + value;
- println!("Break Sessions: {}", break_count_value)
+fn session_counter(value: i32) -> String {
+ format!("Pomodoro Sessions: {}", value)
 }
