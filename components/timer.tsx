@@ -46,6 +46,7 @@ export default function Timer() {
     setMinutes(value);
     setRemainingTime(value * 60);
   }
+
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
@@ -57,9 +58,7 @@ export default function Timer() {
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
-          setSessionCounter(
-            (prevSessionCounter: Number) => prevSessionCounter + 1
-          );
+          setSessionCounter((sessionCounter: Number) => sessionCounter + 1);
           setMinutes(5);
           setSeconds(0);
           setIsBreak(true);
@@ -81,7 +80,15 @@ export default function Timer() {
 
       return () => clearInterval(intervalId);
     }
-  }, [isBreak, isTimerRunning, minutes, remainingTime, seconds]);
+  }, [
+    isBreak,
+    isTimerRunning,
+    minutes,
+    remainingTime,
+    seconds,
+    setBreakCounter,
+    setSessionCounter,
+  ]);
 
   useEffect(() => {});
   return (
