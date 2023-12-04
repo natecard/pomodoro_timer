@@ -78,9 +78,15 @@ fn show_window(app: AppHandle) {
 
 #[tauri::command]
 fn break_counter(value: i32) -> String {
- format!("Break Sessions: {}", value)
+  let break_counter_value;
+  break_counter_value = value;
+ format!("Break Sessions: {}", break_counter_value)
 }
+
+
 #[tauri::command]
 fn session_counter(value: i32) -> String {
- format!("Pomodoro Sessions: {}", value)
+  let session_counter_value: i32;
+  session_counter_value = value;
+ format!("Pomodoro Sessions: {}", session_counter_value)
 }
