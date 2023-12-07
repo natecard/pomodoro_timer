@@ -1,3 +1,12 @@
+import {
+  createDir,
+  BaseDirectory,
+  readDir,
+  FileEntry,
+  writeTextFile,
+  readTextFile,
+} from "@tauri-apps/api/fs";
+
 interface sessionLog {
   session: {
     session_info: {
@@ -16,4 +25,33 @@ interface sessionLog {
     tags: string;
     notes: string;
   };
+}
+
+try {
+  await createDir("users", { dir: BaseDirectory.AppData, recursive: true });
+} catch (error) {
+  console.error(error);
+}
+const entries = await readDir("users", {
+  dir: BaseDirectory.AppData,
+  recursive: true,
+});
+
+function processEntries(entries: FileEntry[]): void {
+  for (const entry of entries) {
+    console.log(`Entry: ${entry.path}`);
+    if (entry.children) {
+      processEntries(entry.children);
+    }
+  }
+}
+function writeEntries(data: string) {
+  writeTextFile("session_data.json", data, {
+    dir: BaseDirectory.AppData,
+    append: true,
+  });
+}
+
+function readEntries(data: string) {
+  readTextFile("session_data.json", { dir: BaseDirectory.AppData });
 }
