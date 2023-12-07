@@ -1,34 +1,19 @@
-import { DBSchema, openDB } from "idb";
-
-interface SessionDB extends DBSchema {
+interface sessionLog {
   session: {
-    key: string;
-    value: number;
-    session_time: {
-      key: string;
-      value: number;
+    session_info: {
+      key: number;
+      session_length: number;
+      session_completed: boolean;
+      start_time_in_day: number;
+      date: number;
+      interruptions: {
+        interruptions: boolean;
+        number_of_interruptions: number;
+      };
     };
+    session_number: number;
+    number_of_session_on_date: number;
+    tags: string;
+    notes: string;
   };
-};
-
-const requestDB = openDB<SessionDB>("SessionLogs", 1, {
-  upgrade(db) {
-    db.createObjectStore("session");
-  },
-});
-
-export async function get(key) {
-  return (await requestDB).get("keyval", key);
-}
-export async function set(key: string, val: number) {
-  return (await requestDB).put("keyval", val, key);
-}
-export async function del(key) {
-  return (await requestDB).delete("keyval", key);
-}
-export async function clear() {
-  return (await requestDB).clear("keyval");
-}
-export async function keys() {
-  return (await requestDB).getAllKeys("keyval");
 }
