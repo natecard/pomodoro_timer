@@ -2,8 +2,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::env;
+use std::fs::File;
+use std::io::{BufWriter, Write};
 // TODO Create window handler function
 
+use serde::{Serialize, Deserialize};
+use serde_json::Number;
+// use serde_json::{to_string, to_value};
 use tauri::{Manager, AppHandle, Window};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, SystemTray};
 fn main() {
@@ -78,4 +83,61 @@ fn session_counter(value: i32) -> String {
   let session_counter_value: i32;
   session_counter_value = value;
  format!("Pomodoro Sessions: {}", session_counter_value)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct SessionLog {
+  session_info: SessionInfo,
+  session_number: u32,
+  number_of_session_on_date: u8,
+  tags: Vec<String>,
+  notes: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct SessionInfo {
+  key: u32,
+  session_length: u32,
+  session_completed: bool,
+  start_time_in_day: u32,
+  date: u32,
+  interruptions: Interruptions,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Interruptions {
+  interruptions: bool,
+  number_of_interruptions: u8,
+}
+
+fn write_entries(data: String) -> Result<(), std::io::Error> {
+  let mut file = File::create("session_data.json")?;
+  let mut buf_writer = BufWriter::new(&file);
+  // Append a newline character if the file already has content
+  if file.metadata()?.len() > 0 {
+    buf_writer.write_all("\n".as_bytes())?;
+  }
+  buf_writer.write_all(data.as_bytes())?;
+  buf_writer.flush()?;
+  Ok(())
+}
+#[tauri::command]
+fn start_time(value: String){
+  let time: i128 = value.parse().unwrap();
+  println!("{}", value)
+}
+#[tauri::command]
+fn session_log_to_json(string: String) {
+  match serde_json::from_str::<SessionLog>(&string) {
+    Ok(session_log) => {
+     // Convert the SessionLog object to JSON string
+      let json_string = serde_json::to_string(&session_log).unwrap();
+      // Append the JSON string to the file
+      write_entries(json_string);
+    }
+    Err(error) => {
+      // Handle deserialization error
+      eprintln!("Error deserializing JSON: {:?}", error);
+    }
+  }
 }
