@@ -6,15 +6,15 @@ interface DataProviderProps {
 }
 
 export const DataContext = createContext({
-  breakCounter: 0 as Number,
-  setBreakCounter: (Number: Number) => {},
-  sessionCounter: 0 as Number,
-  setSessionCounter: (Number: Number) => {},
+  breakCounter: 0 as number,
+  setBreakCounter: (Number) => {Number+1},
+  sessionCounter: 0 as number,
+  setSessionCounter: (Number) => {Number+1},
 });
 
 export default function DataProvider({ children }: DataProviderProps) {
-  const [sessionCounter, setSessionCounter] = useState<Number>(0);
-  const [breakCounter, setBreakCounter] = useState<Number>(0);
+  const [sessionCounter, setSessionCounter] = useState<number>(0);
+  const [breakCounter, setBreakCounter] = useState<number>(0);
   return (
     <DataContext.Provider
       value={{

@@ -7,6 +7,7 @@ import { Pause, Play, TimerReset } from "lucide-react";
 import { invoke } from "@tauri-apps/api/tauri";
 import Counter from "./Counter";
 import { DataContext } from "./ContextProvider";
+import { start_time } from "@/app/backend/database";
 
 export default function Timer() {
   const [minutes, setMinutes] = useState(0);
@@ -20,12 +21,11 @@ export default function Timer() {
   const [progress, setProgress] = useState(100);
   const { sessionCounter, setSessionCounter, breakCounter, setBreakCounter } =
     useContext(DataContext);
-  // const [cycleCounter, setCycleCounter] = useState(0);
-  // const [breakCounter, setBreakCounter] = useState(0);
-
+  
   const handleStartTimer = () => {
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(true);
+    start_time();
   };
 
   const handlePauseTimer = () => {
@@ -51,14 +51,14 @@ export default function Timer() {
     if (isTimerRunning) {
       const intervalId = setInterval(() => {
         if (minutes <= 0 && seconds <= 0 && isBreak) {
-          setBreakCounter((prevBreakCounter: Number) => prevBreakCounter + 1);
+          setBreakCounter((prevState: number): number => prevState + 1);
           setMinutes(25);
           setSeconds(0);
           setIsBreak(false);
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
-          setSessionCounter((sessionCounter: Number) => sessionCounter + 1);
+          setSessionCounter((prevState: number): number => prevState + 1);
           setMinutes(5);
           setSeconds(0);
           setIsBreak(true);
