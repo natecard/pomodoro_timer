@@ -6,8 +6,10 @@ import {
   writeTextFile,
   readTextFile,
 } from "@tauri-apps/api/fs";
+import { invoke } from "@tauri-apps/api/tauri";
+import { ReactEventHandler } from "react";
 
-interface sessionLog {
+export interface sessionLog {
   session: {
     session_info: {
       key: number;
@@ -45,13 +47,17 @@ function processEntries(entries: FileEntry[]): void {
     }
   }
 }
-function writeEntries(data: string) {
-  writeTextFile("session_data.json", data, {
-    dir: BaseDirectory.AppData,
-    append: true,
-  });
+export function start_time(){
+  invoke('start_time', {value: Date()})
 }
+ 
+export async function writeEntries(data: string) {
+  let existingData = await readTextFile("session_data.json", { dir: BaseDirectory.AppData });
 
-function readEntries(data: string) {
-  readTextFile("session_data.json", { dir: BaseDirectory.AppData });
+  invoke('session_log_to_json', {string: data})
+  // Append the new data
+  // await writeTextFile("session_data.json", data + "\n", {
+  //   dir: BaseDirectory.AppData,
+  //   append: true,
+  // });
 }
