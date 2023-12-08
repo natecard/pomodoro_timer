@@ -122,8 +122,8 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   Ok(())
 }
 #[tauri::command]
-fn start_time(value: String){
-  let time: i128 = value.parse().unwrap();
+fn start_time(value: i128){
+  // let time: i128 = value.parse().unwrap();
   println!("{}", value)
 }
 #[tauri::command]

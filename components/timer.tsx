@@ -22,10 +22,11 @@ export default function Timer() {
   const { sessionCounter, setSessionCounter, breakCounter, setBreakCounter } =
     useContext(DataContext);
   
-  const handleStartTimer = () => {
+   const handleStartTimer = () => {
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(true);
-    start_time();
+    const startTime = Date.now()
+    invoke("start_time", {value: startTime});
   };
 
   const handlePauseTimer = () => {
