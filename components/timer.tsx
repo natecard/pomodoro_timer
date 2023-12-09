@@ -25,8 +25,7 @@ export default function Timer() {
    const handleStartTimer = () => {
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(true);
-    const startTime = Date.now()
-    invoke("start_time", {value: startTime});
+    invoke("start_time");
   };
 
   const handlePauseTimer = () => {

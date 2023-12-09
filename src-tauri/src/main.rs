@@ -4,6 +4,8 @@
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use chrono::{DateTime, Local, Utc, Duration, TimeZone};
+use std::time::{UNIX_EPOCH, SystemTime, Instant};
 // TODO Create window handler function
 
 use serde::{Serialize, Deserialize};
@@ -58,7 +60,7 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window])
+    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, start_time, session_log_to_json])
     .system_tray(system_tray.clone())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -99,19 +101,19 @@ struct SessionInfo {
   key: u32,
   session_length: u32,
   session_completed: bool,
-  start_time_in_day: u32,
+  start_timestamp: u32,
   date: u32,
-  interruptions: Interruptions,
+  pauses: Pauses,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Interruptions {
-  interruptions: bool,
-  number_of_interruptions: u8,
+struct Pauses {
+  pauses: bool,
+  number_of_pauses: u8,
 }
 
 fn write_entries(data: String) -> Result<(), std::io::Error> {
-  let mut file = File::create("session_data.json")?;
+  let file = File::create("session_data.json")?;
   let mut buf_writer = BufWriter::new(&file);
   // Append a newline character if the file already has content
   if file.metadata()?.len() > 0 {
@@ -122,10 +124,19 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   Ok(())
 }
 #[tauri::command]
-fn start_time(value: i128){
-  // let time: i128 = value.parse().unwrap();
-  println!("{}", value)
+fn start_time(){
+  let start_timestamp = Utc::now();
+  // let time: DateTime<Local> = value.into();
+  println!("{:#?}", start_timestamp);
+  // time_duration(time)
 }
+
+// #[tauri::command]
+// fn time_duration(value: DateTime<Local>){
+//   let start_time_stamp = Utc.timestamp_opt(value, 0);
+//   let duration = start_time_stamp;
+//    println!("Duration: {:?}", duration);
+// }
 #[tauri::command]
 fn session_log_to_json(string: String) {
   match serde_json::from_str::<SessionLog>(&string) {
@@ -134,6 +145,7 @@ fn session_log_to_json(string: String) {
       let json_string = serde_json::to_string(&session_log).unwrap();
       // Append the JSON string to the file
       write_entries(json_string);
+
     }
     Err(error) => {
       // Handle deserialization error
