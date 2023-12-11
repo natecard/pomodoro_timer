@@ -4,7 +4,7 @@
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use chrono::{Utc, TimeZone, DateTime};
+use chrono::{Utc, DateTime};
 // TODO Create window handler function
 
 use serde::{Serialize, Deserialize};
@@ -58,7 +58,7 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, calculate_duration, session_log_to_json])
+    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, calculate_duration, session_log_to_json, start_time, end_time])
     .system_tray(system_tray.clone())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -133,14 +133,13 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   }
   
 #[tauri::command]
-fn calculate_duration(start_timestamp: i64, end_timestamp: i64) -> i64 {
+fn calculate_duration(start_timestamp: i64, end_timestamp: i64) {
   let start_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(start_timestamp, 0).expect("invalid timestamp");
   let end_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(end_timestamp, 0).expect("invalid timestamp");
   let duration: chrono::Duration = end_time.signed_duration_since(start_time);
-  duration.num_seconds()
+  duration.num_seconds().to_string();
+  print!("Seconds elapsed: {}", duration);
 }
-
-
 
   #[tauri::command]
   fn session_log_to_json(string: String) {

@@ -7,34 +7,39 @@ import { Pause, Play, TimerReset } from "lucide-react";
 import { invoke } from "@tauri-apps/api/tauri";
 import Counter from "./Counter";
 import { DataContext } from "./ContextProvider";
-import { start_time } from "@/app/backend/database";
 
 export default function Timer() {
   const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(10);
   const [key, setKey] = useState(0);
   const [remainingTime, setRemainingTime] = useState(
     minutes * 60 + seconds / (minutes * 60)
   );
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [progress, setProgress] = useState(100);
   const { sessionCounter, setSessionCounter, breakCounter, setBreakCounter } =
     useContext(DataContext);
   
+
+
    const handleStartTimer = () => {
+    setStartTime(Date.now())
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(true);
     invoke("start_time");
-  };
+    console.log(`Start Time: ${startTime}`);
+  }
 
   const handlePauseTimer = () => {
     setIsTimerRunning(false);
   };
 
   const handleResetTimer = () => {
-    setMinutes(25);
-    setSeconds(0);
+    setMinutes(0);
+    setSeconds(10);
     setRemainingTime(minutes * 60 + seconds / (minutes * 60));
     setIsTimerRunning(false);
     setIsBreak(false);
@@ -49,8 +54,10 @@ export default function Timer() {
 
   useEffect(() => {
     if (isTimerRunning) {
-      const intervalId = setInterval(() => {
+      const intervalId = setInterval( () => {
         if (minutes <= 0 && seconds <= 0 && isBreak) {
+          console.log(`Start Time: ${startTime}`)
+          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now()})
           setBreakCounter((prevState: number): number => prevState + 1);
           setMinutes(25);
           setSeconds(0);
@@ -58,6 +65,7 @@ export default function Timer() {
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
+          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now()})
           setSessionCounter((prevState: number): number => prevState + 1);
           setMinutes(5);
           setSeconds(0);
@@ -65,7 +73,7 @@ export default function Timer() {
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (seconds === 0) {
-          setMinutes(minutes - 1);
+          setMinutes(minutes - 1); 
           setSeconds(59);
         } else {
           setSeconds(seconds - 1);
@@ -89,6 +97,12 @@ export default function Timer() {
     setBreakCounter,
     setSessionCounter,
   ]);
+
+
+async function calculateDuration(startTime: number, endTime: number) {
+ const duration = await invoke('calculate_duration', { startTimestamp: startTime, endTimestamp: endTime });
+ console.log(`Duration: ${duration} seconds`);
+}
 
   useEffect(() => {});
   return (
