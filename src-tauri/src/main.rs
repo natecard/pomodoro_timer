@@ -4,11 +4,10 @@
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use chrono::{DateTime, Local, Utc, Duration};
+use chrono::{Utc, TimeZone, DateTime};
 // TODO Create window handler function
 
 use serde::{Serialize, Deserialize};
-use serde_json::Number;
 // use serde_json::{to_string, to_value};
 use tauri::{Manager, AppHandle, Window};
 use tauri::{CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, SystemTrayEvent, SystemTray};
@@ -59,7 +58,7 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, start_time, session_log_to_json, time_duration])
+    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, calculate_duration, session_log_to_json])
     .system_tray(system_tray.clone())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -77,7 +76,6 @@ fn break_counter(value: i32) -> String {
   break_counter_value = value;
  format!("Break Sessions: {}", break_counter_value)
 }
-
 
 #[tauri::command]
 fn session_counter(value: i32) -> String {
@@ -122,23 +120,31 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   buf_writer.flush()?;
   Ok(())
 }
+
+  #[tauri::command]
+  fn start_time(){
+    let start_timestamp = Utc::now();
+    println!("{:#?}", start_timestamp);
+  }
+  #[tauri::command]
+  fn end_time(){
+    let end_timestamp = Utc::now();
+    println!("Duration: {:#?}", end_timestamp);
+  }
+  
 #[tauri::command]
-fn start_time(){
-  let start_timestamp = Utc::now();
-  // let time: DateTime<Local> = value.into();
-  println!("{:#?}", start_timestamp);
+fn calculate_duration(start_timestamp: i64, end_timestamp: i64) -> i64 {
+  let start_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(start_timestamp, 0).expect("invalid timestamp");
+  let end_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(end_timestamp, 0).expect("invalid timestamp");
+  let duration: chrono::Duration = end_time.signed_duration_since(start_time);
+  duration.num_seconds()
 }
 
-#[tauri::command]
-fn time_duration(time_stamp: DateTime<Utc>){
-  let end_timestamp = Utc::now();
-  let duration = end_timestamp-time_stamp;
-  duration.num_seconds();
-   println!("Duration: {:#?}", duration);
-}
-#[tauri::command]
-fn session_log_to_json(string: String) {
-  match serde_json::from_str::<SessionLog>(&string) {
+
+
+  #[tauri::command]
+  fn session_log_to_json(string: String) {
+    match serde_json::from_str::<SessionLog>(&string) {
     Ok(session_log) => {
      // Convert the SessionLog object to JSON string
       let json_string = serde_json::to_string(&session_log).unwrap();
