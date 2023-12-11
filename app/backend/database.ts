@@ -48,7 +48,7 @@ function processEntries(entries: FileEntry[]): void {
   }
 }
 export function start_time(){
-  invoke('start_time', {value: Date()})
+  invoke('start_time')
 }
  
 export async function writeEntries(data: string) {
