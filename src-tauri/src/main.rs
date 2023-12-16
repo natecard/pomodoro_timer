@@ -134,11 +134,11 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   
 #[tauri::command]
 fn calculate_duration(start_timestamp: i64, end_timestamp: i64) {
-  let start_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(start_timestamp, 0).expect("invalid timestamp");
-  let end_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(end_timestamp, 0).expect("invalid timestamp");
+  let start_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(start_timestamp, 0).unwrap();
+  let end_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(end_timestamp, 0).unwrap();
   let duration: chrono::Duration = end_time.signed_duration_since(start_time);
-  duration.num_seconds().to_string();
-  print!("Seconds elapsed: {}", duration);
+  let duration_string = duration.num_seconds().to_string();
+  print!("Seconds elapsed: {}", duration_string);
 }
 
   #[tauri::command]

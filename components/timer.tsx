@@ -15,22 +15,29 @@ export default function Timer() {
   const [remainingTime, setRemainingTime] = useState(
     minutes * 60 + seconds / (minutes * 60)
   );
-  const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [progress, setProgress] = useState(100);
   const { sessionCounter, setSessionCounter, breakCounter, setBreakCounter } =
     useContext(DataContext);
   
-
-
-   const handleStartTimer = () => {
-    setStartTime(Date.now())
-    setRemainingTime(minutes * 60 + seconds / (minutes * 60));
-    setIsTimerRunning(true);
-    invoke("start_time");
-    console.log(`Start Time: ${startTime}`);
+    async function handleStartTimer () {
+      await start_timer_button()
+      setStartTime(Date.now().toString())
+      invoke("start_time");
+  }
+  
+  async function start_timer_button(){
+    try {
+      setStartTime(Date.now().toString())
+      setRemainingTime(minutes * 60 + seconds / (minutes * 60));
+      setIsTimerRunning(true);
+      console.log(`Start Time: ${startTime}`);
+    } catch (error) {
+     console.error(error) 
+    }
   }
 
   const handlePauseTimer = () => {
@@ -57,7 +64,7 @@ export default function Timer() {
       const intervalId = setInterval( () => {
         if (minutes <= 0 && seconds <= 0 && isBreak) {
           console.log(`Start Time: ${startTime}`)
-          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now()})
+          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now().toString().toString()})
           setBreakCounter((prevState: number): number => prevState + 1);
           setMinutes(25);
           setSeconds(0);
@@ -65,7 +72,7 @@ export default function Timer() {
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
-          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now()})
+          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now().toString()})
           setSessionCounter((prevState: number): number => prevState + 1);
           setMinutes(5);
           setSeconds(0);
