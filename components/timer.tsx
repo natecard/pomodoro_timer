@@ -63,8 +63,7 @@ export default function Timer() {
     if (isTimerRunning) {
       const intervalId = setInterval( () => {
         if (minutes <= 0 && seconds <= 0 && isBreak) {
-          console.log(`Start Time: ${startTime}`)
-          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now().toString().toString()})
+          invoke("calculate_duration", {startTimestring: startTime, endTimestring: Date.now().toString()}).catch();
           setBreakCounter((prevState: number): number => prevState + 1);
           setMinutes(25);
           setSeconds(0);
@@ -72,7 +71,7 @@ export default function Timer() {
           setIsTimerRunning(false);
           invoke("show_window");
         } else if (minutes <= 0 && seconds <= 0) {
-          invoke("calculate_duration", {startTimeStamp: startTime, endTimeStamp: Date.now().toString()})
+          invoke("calculate_duration", {startTimestring: startTime, endTimestring: Date.now().toString()}).catch();
           setSessionCounter((prevState: number): number => prevState + 1);
           setMinutes(5);
           setSeconds(0);

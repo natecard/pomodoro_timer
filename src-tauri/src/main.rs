@@ -4,7 +4,7 @@
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use chrono::{Utc, DateTime};
+use chrono::{Utc, DateTime, DurationRound};
 // TODO Create window handler function
 
 use serde::{Serialize, Deserialize};
@@ -124,21 +124,22 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   #[tauri::command]
   fn start_time(){
     let start_timestamp = Utc::now();
-    println!("{:#?}", start_timestamp);
+    println!("Start Time: {}", start_timestamp);
   }
   #[tauri::command]
   fn end_time(){
     let end_timestamp = Utc::now();
-    println!("Duration: {:#?}", end_timestamp);
+    println!("End Time: {}", end_timestamp);
   }
-  
+
 #[tauri::command]
-fn calculate_duration(start_timestamp: i64, end_timestamp: i64) {
-  let start_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(start_timestamp, 0).unwrap();
-  let end_time: DateTime<Utc> = DateTime::<Utc>::from_timestamp(end_timestamp, 0).unwrap();
-  let duration: chrono::Duration = end_time.signed_duration_since(start_time);
-  let duration_string = duration.num_seconds().to_string();
-  print!("Seconds elapsed: {}", duration_string);
+fn calculate_duration(start_timestring: String, end_timestring: String) {
+  let start_timestamp = start_timestring.parse::<i64>().unwrap();
+  let end_timestamp = end_timestring.parse::<i64>().unwrap();
+  let duration= end_timestamp-start_timestamp;
+  let duration_string = duration/1000;
+  // let duration_string = duration_string.
+  println!("Seconds elapsed: {}", duration_string);
 }
 
   #[tauri::command]
