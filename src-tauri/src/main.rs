@@ -4,7 +4,7 @@
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use chrono::{Utc, DateTime, DurationRound};
+use chrono::Utc;
 // TODO Create window handler function
 
 use serde::{Serialize, Deserialize};
@@ -137,7 +137,7 @@ fn calculate_duration(start_timestring: String, end_timestring: String) {
   let start_timestamp = start_timestring.parse::<i64>().unwrap();
   let end_timestamp = end_timestring.parse::<i64>().unwrap();
   let duration= end_timestamp-start_timestamp;
-  let duration_string = duration/1000;
+  let duration_string = (duration/1000)-1;
   // let duration_string = duration_string.
   println!("Seconds elapsed: {}", duration_string);
 }
