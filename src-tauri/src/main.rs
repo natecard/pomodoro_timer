@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::env;
+use std::{env, os};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use chrono::Utc;
@@ -149,7 +149,7 @@ fn calculate_duration(start_timestring: String, end_timestring: String) {
      // Convert the SessionLog object to JSON string
       let json_string = serde_json::to_string(&session_log).unwrap();
       // Append the JSON string to the file
-      write_entries(json_string);
+      let _ = write_entries(json_string);
 
     }
     Err(error) => {

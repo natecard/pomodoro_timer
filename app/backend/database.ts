@@ -53,11 +53,11 @@ export function start_time(){
  
 export async function writeEntries(data: string) {
   let existingData = await readTextFile("session_data.json", { dir: BaseDirectory.AppData });
-
+  console.log('writing to logs')
   invoke('session_log_to_json', {string: data})
   // Append the new data
-  // await writeTextFile("session_data.json", data + "\n", {
-  //   dir: BaseDirectory.AppData,
-  //   append: true,
-  // });
+  await writeTextFile("session_data.json", data + "\n", {
+    dir: BaseDirectory.AppData,
+    append: true,
+  });
 }
