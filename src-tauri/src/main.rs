@@ -58,7 +58,9 @@ fn main() {
       }
       _ => {}
     })
-    .invoke_handler(tauri::generate_handler![break_counter, session_counter, show_window, calculate_duration, session_log_to_json, start_time, end_time])
+    .invoke_handler(tauri::generate_handler![break_counter, session_counter,
+       show_window, timer_logic, set_duration, calculate_duration, session_log_to_json,
+        start_time, end_time])
     .system_tray(system_tray.clone())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -120,17 +122,28 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   buf_writer.flush()?;
   Ok(())
 }
+#[tauri::command]
+fn set_duration(duration_in_seconds: i64){
+  let duration:i64 = duration_in_seconds;
+}
 
   #[tauri::command]
   fn start_time(){
     let start_timestamp = Utc::now();
     println!("Start Time: {}", start_timestamp);
   }
+
   #[tauri::command]
   fn end_time(){
     let end_timestamp = Utc::now();
     println!("End Time: {}", end_timestamp);
   }
+
+#[tauri::command]
+fn timer_logic(duration_in_seconds: i64){
+  start_time();
+  set_duration(duration_in_seconds);
+}
 
 #[tauri::command]
 fn calculate_duration(start_timestring: String, end_timestring: String) {
@@ -142,19 +155,19 @@ fn calculate_duration(start_timestring: String, end_timestring: String) {
   println!("Seconds elapsed: {}", duration_string);
 }
 
-  #[tauri::command]
-  fn session_log_to_json(string: String) {
-    match serde_json::from_str::<SessionLog>(&string) {
+#[tauri::command]
+fn session_log_to_json(string: String) {
+  match serde_json::from_str::<SessionLog>(&string) {
     Ok(session_log) => {
-     // Convert the SessionLog object to JSON string
-      let json_string = serde_json::to_string(&session_log).unwrap();
-      // Append the JSON string to the file
-      let _ = write_entries(json_string);
+    // Convert the SessionLog object to JSON string
+    let json_string = serde_json::to_string(&session_log).unwrap();
+    // Append the JSON string to the file
+    let _ = write_entries(json_string);
 
     }
     Err(error) => {
-      // Handle deserialization error
-      eprintln!("Error deserializing JSON: {:?}", error);
+    // Handle deserialization error
+    eprintln!("Error deserializing JSON: {:?}", error);
     }
   }
 }
