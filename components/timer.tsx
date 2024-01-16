@@ -27,6 +27,7 @@ export default function Timer() {
       await start_timer_button()
       setStartTime(Date.now().toString())
       invoke("start_time");
+      invoke("timer_logic", {durationInSeconds: remainingTime});
   }
   
   async function start_timer_button(){
@@ -62,6 +63,7 @@ export default function Timer() {
   useEffect(() => {
     if (isTimerRunning) {
       const intervalId = setInterval( () => {
+        // When timer runs out and the session is a break
         if (minutes <= 0 && seconds <= 0 && isBreak) {
           invoke("calculate_duration", {startTimestring: startTime, endTimestring: Date.now().toString()}).catch();
           setBreakCounter((prevState: number): number => prevState + 1);
@@ -70,6 +72,7 @@ export default function Timer() {
           setIsBreak(false);
           setIsTimerRunning(false);
           invoke("show_window");
+          // When the timer runs out during a normal session
         } else if (minutes <= 0 && seconds <= 0) {
           invoke("calculate_duration", {startTimestring: startTime, endTimestring: Date.now().toString()}).catch();
           setSessionCounter((prevState: number): number => prevState + 1);
@@ -78,9 +81,11 @@ export default function Timer() {
           setIsBreak(true);
           setIsTimerRunning(false);
           invoke("show_window");
+          // Minute rollover, reset seconds to 59 and decrememnt the minutes by 1
         } else if (seconds === 0) {
           setMinutes(minutes - 1); 
           setSeconds(59);
+          // Decrement seconds each second
         } else {
           setSeconds(seconds - 1);
         }
@@ -199,8 +204,6 @@ async function calculateDuration(startTime: number, endTime: number) {
         </div>
       </div>
       <Counter />
-      {/* <div>Pomodoro Cycles: {cycleCounter}</div>
-      <div>Breaks: {breakCounter}</div> */}
     </div>
   );
 }
