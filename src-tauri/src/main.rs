@@ -98,9 +98,9 @@ struct SessionLog {
 #[derive(Debug, Serialize, Deserialize)]
 struct SessionInfo {
   key: u32,
-  session_length: u32,
+  session_length: i64,
   session_completed: bool,
-  start_timestamp: u32,
+  start_timestamp: String,
   date: u32,
   pauses: Pauses,
 }
@@ -123,20 +123,23 @@ fn write_entries(data: String) -> Result<(), std::io::Error> {
   Ok(())
 }
 #[tauri::command]
-fn set_duration(duration_in_seconds: i64){
+fn set_duration(duration_in_seconds: i64)->i64{
   let duration:i64 = duration_in_seconds;
+  return duration;
 }
 
   #[tauri::command]
-  fn start_time(){
+  fn start_time()->String{
     let start_timestamp = Utc::now();
     println!("Start Time: {}", start_timestamp);
+    return start_timestamp.to_string();
   }
 
   #[tauri::command]
-  fn end_time(){
+  fn end_time()->String{
     let end_timestamp = Utc::now();
     println!("End Time: {}", end_timestamp);
+    return end_timestamp.to_string();
   }
 
 #[tauri::command]
@@ -151,7 +154,6 @@ fn calculate_duration(start_timestring: String, end_timestring: String) {
   let end_timestamp = end_timestring.parse::<i64>().unwrap();
   let duration= end_timestamp-start_timestamp;
   let duration_string = (duration/1000)-1;
-  // let duration_string = duration_string.
   println!("Seconds elapsed: {}", duration_string);
 }
 
@@ -163,7 +165,6 @@ fn session_log_to_json(string: String) {
     let json_string = serde_json::to_string(&session_log).unwrap();
     // Append the JSON string to the file
     let _ = write_entries(json_string);
-
     }
     Err(error) => {
     // Handle deserialization error
